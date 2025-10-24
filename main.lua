@@ -107,11 +107,11 @@ local function startAuto()
     loopThread = task.spawn(function()
         while autoRunning do
             for _, id in ipairs(petIDs) do
-                PetsService:FireServer("UnequipPet", {id})
+                PetsService:FireServer("UnequipPet", id)
             end
             task.wait(0.3)
             for _, id in ipairs(petIDs) do
-                PetsService:FireServer("EquipPet", {id})
+                PetsService:FireServer("EquipPet", id)
             end
             local delayTime = tonumber(DelayBox.Text) or 7
             task.wait(delayTime)
