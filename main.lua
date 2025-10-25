@@ -84,7 +84,7 @@ GetButton.MouseButton1Click:Connect(function()
         if pet:GetAttribute("OWNER") == LP.Name then
             local id = pet:GetAttribute("UUID")
             if id then
-                table.insert(petIDs, tostring(id)) -- store as string (with braces)
+                table.insert(petIDs, tostring(id))
             end
         end
     end
@@ -97,15 +97,10 @@ GetButton.MouseButton1Click:Connect(function()
     end
 end)
 
---// Toggle Function
-local function startAuto()
-    if autoRunning or #petIDs == 0 then return end
-    autoRunning = true
-    Toggle.Text = "Auto: ON"
-    Toggle.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
-
-    loopThread = task.spawn(function()
-        while autoRunning do
+--// Main Loop Function (separate)
+local function autoLoop()
+    while task.wait() do
+        if autoRunning and #petIDs > 0 then
             for _, id in ipairs(petIDs) do
                 PetsService:FireServer("UnequipPet", id)
             end
@@ -115,8 +110,21 @@ local function startAuto()
             end
             local delayTime = tonumber(DelayBox.Text) or 7
             task.wait(delayTime)
+        else
+            task.wait(0.5)
         end
-    end)
+    end
+end
+
+-- Run loop in background once
+task.spawn(autoLoop)
+
+--// Toggle Functions
+local function startAuto()
+    if autoRunning or #petIDs == 0 then return end
+    autoRunning = true
+    Toggle.Text = "Auto: ON"
+    Toggle.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
 end
 
 local function stopAuto()
